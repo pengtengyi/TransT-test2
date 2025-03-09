@@ -1,185 +1,219 @@
-# TransT - Transformer Tracking [CVPR2021]
-Official implementation of the TransT (CVPR2021) , including training code and trained models.
+# GOT-10k Python Toolkit
 
-## News
-- :trophy: **TransT-M wins VOT2021 Real-Time Challenge with EAOMultistart 0.550! The code will be released soon** 
+> UPDATE:<br>
+> All common tracking datasets (GOT-10k, OTB, VOT, UAV, TColor, DTB, NfS, LaSOT and TrackingNet) are supported.<br>
+> Support VOT2019 (ST/LT/RGBD/RGBT) downloading.<br>
+> Fix the randomness in ImageNet-VID ([issue #13](https://github.com/got-10k/toolkit/issues/13)).
 
-## Tracker
-#### TransT ####
+_Run experimenets over common tracking benchmarks (code from [siamfc](https://github.com/got-10k/siamfc/blob/master/test.py)):_
 
-[**[Paper]**](https://arxiv.org/abs/2103.15436)
-[**[Models(google)]**](https://drive.google.com/drive/folders/1GVQV1GoW-ttDJRRqaVAtLUtubtgLhWCE?usp=sharing)
-[**[Models(baidu:iiau)]**](https://pan.baidu.com/s/1geI1cIv_AdLUd7qYKWIqzw)
-[**[Raw Results]**](https://drive.google.com/file/d/1FSUh6NSzu8H2HzectIwCbDEKZo8ZKUro/view?usp=sharing)
+<img src="got10k_toolkit/resources/sample_batch_run.jpg" width = "600" alt="sample_batch_run" align=center />
 
-This work
-presents a attention-based feature fusion network,
-which effectively combines the template and search region
-features using attention. Specifically, the proposed
-method includes an ego-context augment module based on
-self-attention and a cross-feature augment module based on
-cross-attention. We present a Transformer tracking 
-(named TransT) method based on the Siamese-like feature extraction 
-backbone, the designed attention-based fusion mechanism, 
-and the classification and regression head.
+This repository contains the official python toolkit for running experiments and evaluate performance on [GOT-10k](http://got-10k.aitestunion.com/) benchmark. The code is written in pure python and is compile-free. Although we support both python2 and python3, we recommend python3 for better performance.
 
-TransT is a very simple and efficient tracker, 
-without online update module, using the same model and hyparameter for all
-test sets.
-![TransT overview figure](pytracking/.figs/Framework.png)
-![ECA and CFA](pytracking/.figs/ECACFA.png)
+For convenience, the toolkit also provides unofficial implementation of dataset interfaces and tracking pipelines for [OTB (2013/2015)](http://cvlab.hanyang.ac.kr/tracker_benchmark/index.html), [VOT (2013~2018)](http://votchallenge.net), [DTB70](https://github.com/flyers/drone-tracking), [TColor128](http://www.dabi.temple.edu/~hbling/data/TColor-128/TColor-128.html), [NfS (30/240 fps)](http://ci2cv.net/nfs/index.html), [UAV (123/20L)](https://ivul.kaust.edu.sa/Pages/pub-benchmark-simulator-uav.aspx), [LaSOT](https://cis.temple.edu/lasot/) and [TrackingNet](https://tracking-net.org/) benchmarks. It also offers interfaces for [ILSVRC VID](https://image-net.org/challenges/LSVRC/2015/#vid) and [YouTube-BoundingBox](https://research.google.com/youtube-bb/) (comming soon!) datasets.
 
+[GOT-10k](http://got-10k.aitestunion.com/) is a large, high-diversity and one-shot database for training and evaluating generic purposed visual trackers. If you use the GOT-10k database or toolkits for a research publication, please consider citing:
 
+```Bibtex
+@article{Huang_2019,
+  title={GOT-10k: A Large High-Diversity Benchmark for Generic Object Tracking in the Wild},
+  ISSN={1939-3539},
+  url={http://dx.doi.org/10.1109/TPAMI.2019.2957464},
+  DOI={10.1109/tpami.2019.2957464},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  publisher={Institute of Electrical and Electronics Engineers (IEEE)},
+  author={Huang, Lianghua and Zhao, Xin and Huang, Kaiqi},
+  year={2019},
+  pages={1–1}
+}
+```
 
-## Results
-For VOT2020, we add a mask branch to generate mask, without any hyparameter-tuning. The code of the mask branch will be released soon.
+&emsp;\[[Project](http://got-10k.aitestunion.com/)\]\[[PDF](https://arxiv.org/abs/1810.11981)\]\[[Bibtex](http://got-10k.aitestunion.com/bibtex)\]
 
-<table>
-  <tr>
-    <th>Model</th>
-    <th>LaSOT<br>AUC (%)</th>
-    <th>TrackingNet<br>AUC (%)</th>
-    <th>GOT-10k<br>AO (%)</th>
-    <th>VOT2020<br>EAO (%)</th>
-    <th>TNL2K<br>AUC (%)</th>
-    <th>OTB100<br>AUC (%)</th>
-    <th>NFS<br>AUC (%)</th>
-    <th>UAV123<br>AUC (%)</th>
-    <th>Speed<br></th>
-    <th>Params<br></th>
-  </tr>
-  <tr>
-    <td>TransT-N2</td>
-    <td>64.2</td>
-    <td>80.9</td>
-    <td>69.9</td>
-    <td>-</td>
-    <td>-</td>
-    <td>68.1</td>
-    <td>65.7</td>
-    <td>67.0</td>
-    <td>70fps</td>
-    <td>16.7M</td>
-  </tr>
-  <tr>
-    <td>TransT-N4</td>
-    <td>64.9</td>
-    <td>81.4</td>
-    <td>72.3</td>
-    <td>49.5</td>    
-    <td>51.0</td>
-    <td>69.4</td>
-    <td>65.7</td>
-    <td>69.1</td>
-    <td>50fps</td>
-    <td>23.0M</td>
-  </tr>
-</table>
+## Table of Contents
 
-## Installation
-This document contains detailed instructions for installing the necessary dependencied for **TransT**. The instructions 
-have been tested on Ubuntu 18.04 system.
+* [Installation](#installation)
+* [Quick Start: A Concise Example](#quick-start-a-concise-example)
+* [Quick Start: Jupyter Notebook for Off-the-Shelf Usage](#quick-start-jupyter-notebook-for-off-the-shelf-usage)
+* [How to Define a Tracker?](#how-to-define-a-tracker)
+* [How to Run Experiments on GOT-10k?](#how-to-run-experiments-on-got-10k)
+* [How to Evaluate Performance?](#how-to-evaluate-performance)
+* [How to Plot Success Curves?](#how-to-plot-success-curves)
+* [How to Loop Over GOT-10k Dataset?](#how-to-loop-over-got-10k-dataset)
+* [Issues](#issues)
+* [Contributors](#contributors)
 
-#### Install dependencies
-* Create and activate a conda environment 
-    ```bash
-    conda create -n transt python=3.7
-    conda activate transt
-    ```  
-* Install PyTorch
-    ```bash
-    conda install -c pytorch pytorch=1.5 torchvision=0.6.1 cudatoolkit=10.2
-    ```  
+### Installation
 
-* Install other packages
-    ```bash
-    conda install matplotlib pandas tqdm
-    pip install opencv-python tb-nightly visdom scikit-image tikzplotlib gdown
-    conda install cython scipy
-    sudo apt-get install libturbojpeg
-    pip install pycocotools jpeg4py
-    pip install wget yacs
-    pip install shapely==1.6.4.post2
-    ```  
-* Setup the environment                                                                                                 
-Create the default environment setting files.
+Install the toolkit using `pip` (recommended):
 
-    ```bash
-    # Change directory to <PATH_of_TransT>
-    cd TransT
-    
-    # Environment settings for pytracking. Saved at pytracking/evaluation/local.py
-    python -c "from pytracking.evaluation.environment import create_default_local_file; create_default_local_file()"
-    
-    # Environment settings for ltr. Saved at ltr/admin/local.py
-    python -c "from ltr.admin.environment import create_default_local_file; create_default_local_file()"
-    ```
-You can modify these files to set the paths to datasets, results paths etc.
-* Add the project path to environment variables  
-Open ~/.bashrc, and add the following line to the end. Note to change <path_of_TransT> to your real path.
-    ```
-    export PYTHONPATH=<path_of_TransT>:$PYTHONPATH
-    ```
-* Download the pre-trained networks   
-Download the network for [TransT](https://drive.google.com/drive/folders/1GVQV1GoW-ttDJRRqaVAtLUtubtgLhWCE?usp=sharing)
-and put it in the directory set by "network_path" in "pytracking/evaluation/local.py". By default, it is set to 
-pytracking/networks.
+```bash
+pip install --upgrade got10k
+```
 
-## Quick Start
-#### Traning
-* Modify [local.py](ltr/admin/local.py) to set the paths to datasets, results paths etc.
-* Runing the following commands to train the TransT. You can customize some parameters by modifying [transt.py](ltr/train_settings/transt/transt.py)
-    ```bash
-    conda activate transt
-    cd TransT/ltr
-    python run_training.py transt transt
-    ```  
+Stay up-to-date:
 
-#### Evaluation
+```bash
+pip install --upgrade git+https://github.com/got-10k/toolkit.git@master
+```
 
-* We integrated [PySOT](https://github.com/STVIR/pysot) for evaluation. You can download json files in [PySOT](https://github.com/STVIR/pysot) or [here](https://drive.google.com/file/d/1PItNIOkui0iGCRglgsZPZF1-hkmj7vyv/view?usp=sharing).
-    
-    You need to specify the path of the model and dataset in the [test.py](pysot_toolkit/test.py).
-    ```python
-    net_path = '/path_to_model' #Absolute path of the model
-    dataset_root= '/path_to_datasets' #Absolute path of the datasets
-    ```  
-    Then run the following commands.
-    ```bash
-    conda activate TransT
-    cd TransT
-    python -u pysot_toolkit/test.py --dataset <name of dataset> --name 'transt' #test tracker #test tracker
-    python pysot_toolkit/eval.py --tracker_path results/ --dataset <name of dataset> --num 1 --tracker_prefix 'transt' #eval tracker
-    ```  
-    The testing results will in the current directory(results/dataset/transt/)
-    
-* You can also use [pytracking](pytracking) to test and evaluate tracker. 
-The results might be slightly different with [PySOT](https://github.com/STVIR/pysot) due to the slight difference in implementation (pytracking saves results as integers, pysot toolkit saves the results as decimals).
-
-#### Getting Help
-If you meet problem, please try searching our Github issues, if you can't find solutions, feel free to open a new issue.
-* `ImportError: cannot import name region`
-
-Solution: You can just delete `from pysot_toolkit.toolkit.utils.region import vot_overlap, vot_float2str` in [test.py](pysot_toolkit/test.py) if you don't test VOT2019/18/16.
-You can also build `region` by `python setup.py build_ext --inplace` in [pysot_toolkit](pysot_toolkit).
-
-## Citation
+Or, alternatively, clone the repository and install dependencies:
 
 ```
-@inproceedings{TransT,
-title={Transformer Tracking},
-author={Chen, Xin and Yan, Bin and Zhu, Jiawen and Wang, Dong and Yang, Xiaoyun and Lu, Huchuan},
-booktitle={CVPR},
-year={2021}
-}
-```  
+git clone https://github.com/got-10k/toolkit.git
+cd toolkit
+pip install -r requirements.txt
+```
 
-## Acknowledgement
-This is a modified version of the python framework [PyTracking](https://github.com/visionml/pytracking) based on **Pytorch**, 
-also borrowing from [PySOT](https://github.com/STVIR/pysot) and [detr](https://github.com/facebookresearch/detr). 
-We would like to thank their authors for providing great frameworks and toolkits.
+Then directly copy the `got10k` folder to your workspace to use it.
 
-## Contact
-* Xin Chen (email:chenxin3131@mail.dlut.edu.cn)
+### Quick Start: A Concise Example
 
-    Feel free to contact me if you have additional questions. 
+Here is a simple example on how to use the toolkit to define a tracker, run experiments on GOT-10k and evaluate performance.
+
+```Python
+from got10k.trackers import Tracker
+from got10k.experiments import ExperimentGOT10k
+
+class IdentityTracker(Tracker):
+    def __init__(self):
+        super(IdentityTracker, self).__init__(name='IdentityTracker')
+    
+    def init(self, image, box):
+        self.box = box
+
+    def update(self, image):
+        return self.box
+
+if __name__ == '__main__':
+    # setup tracker
+    tracker = IdentityTracker()
+
+    # run experiments on GOT-10k (validation subset)
+    experiment = ExperimentGOT10k('data/GOT-10k', subset='val')
+    experiment.run(tracker, visualize=True)
+
+    # report performance
+    experiment.report([tracker.name])
+```
+
+To run experiments on [OTB](http://cvlab.hanyang.ac.kr/tracker_benchmark/index.html), [VOT](http://votchallenge.net) or other benchmarks, simply change `ExperimentGOT10k`, e.g., to `ExperimentOTB` or `ExperimentVOT`, and `root_dir` to their corresponding paths for this purpose.
+
+### Quick Start: Jupyter Notebook for Off-the-Shelf Usage
+
+Open [quick_examples.ipynb](https://github.com/got-10k/toolkit/tree/master/examples/quick_examples.ipynb) in [Jupyter Notebook](http://jupyter.org/) to see more examples on toolkit usage.
+
+### How to Define a Tracker?
+
+To define a tracker using the toolkit, simply inherit and override `init` and `update` methods from the `Tracker` class. Here is a simple example:
+
+```Python
+from got10k.trackers import Tracker
+
+class IdentityTracker(Tracker):
+    def __init__(self):
+        super(IdentityTracker, self).__init__(
+            name='IdentityTracker',  # tracker name
+            is_deterministic=True    # stochastic (False) or deterministic (True)
+        )
+    
+    def init(self, image, box):
+        self.box = box
+
+    def update(self, image):
+        return self.box
+```
+
+### How to Run Experiments on GOT-10k?
+
+Instantiate an `ExperimentGOT10k` object, and leave all experiment pipelines to its `run` method:
+
+```Python
+from got10k.experiments import ExperimentGOT10k
+
+# ... tracker definition ...
+
+# instantiate a tracker
+tracker = IdentityTracker()
+
+# setup experiment (validation subset)
+experiment = ExperimentGOT10k(
+    root_dir='data/GOT-10k',    # GOT-10k's root directory
+    subset='val',               # 'train' | 'val' | 'test'
+    result_dir='results',       # where to store tracking results
+    report_dir='reports'        # where to store evaluation reports
+)
+experiment.run(tracker, visualize=True)
+```
+
+The tracking results will be stored in `result_dir`.
+
+### How to Evaluate Performance?
+
+Use the `report` method of `ExperimentGOT10k` for this purpose:
+
+```Python
+# ... run experiments on GOT-10k ...
+
+# report tracking performance
+experiment.report([tracker.name])
+```
+
+When evaluated on the __validation subset__, the scores and curves will be directly generated in `report_dir`.
+
+However, when evaluated on the __test subset__, since all groundtruths are withholded, you will have to submit your results to the [evaluation server](http://got-10k.aitestunion.com/submit_instructions) for evaluation. The `report` function will generate a `.zip` file which can be directly uploaded for submission. For more instructions, see [submission instruction](http://got-10k.aitestunion.com/submit_instructions).
+
+See public evaluation results on [GOT-10k's leaderboard](http://got-10k.aitestunion.com/leaderboard).
+
+## How to Plot Success Curves?
+
+Assume that a list of all performance files (JSON files) are stored in `report_files`, here is an example showing how to plot success curves:
+
+```Python
+from got10k.experiments import ExperimentGOT10k
+
+report_files = ['reports/GOT-10k/performance_25_entries.json']
+tracker_names = ['SiamFCv2', 'GOTURN', 'CCOT', 'MDNet']
+
+# setup experiment and plot curves
+experiment = ExperimentGOT10k('data/GOT-10k', subset='test')
+experiment.plot_curves(report_files, tracker_names)
+```
+
+The report file of 25 baseline entries can be downloaded from the [Downloads page](http://got-10k.aitestunion.com/downloads). You can also download single report file for each entry from the [Leaderboard page](http://got-10k.aitestunion.com/leaderboard).
+
+### How to Loop Over GOT-10k Dataset?
+
+The `got10k.datasets.GOT10k` provides an iterable and indexable interface for GOT-10k's sequences. Here is an example:
+
+```Python
+from PIL import Image
+from got10k.datasets import GOT10k
+from got10k.utils.viz import show_frame
+
+dataset = GOT10k(root_dir='data/GOT-10k', subset='train')
+
+# indexing
+img_file, anno = dataset[10]
+
+# for-loop
+for s, (img_files, anno) in enumerate(dataset):
+    seq_name = dataset.seq_names[s]
+    print('Sequence:', seq_name)
+
+    # show all frames
+    for f, img_file in enumerate(img_files):
+        image = Image.open(img_file)
+        show_frame(image, anno[f, :])
+```
+
+To loop over `OTB` or `VOT` datasets, simply change `GOT10k` to `OTB` or `VOT` for this purpose.
+
+### Issues
+
+Please report any problems or suggessions in the [Issues](https://github.com/got-10k/toolkit/issues) page.
+
+### Contributors
+
+- [Lianghua Huang](https://github.com/huanglianghua)
